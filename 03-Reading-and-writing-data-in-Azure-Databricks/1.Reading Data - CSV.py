@@ -364,13 +364,34 @@ csvSchema = StructType([
 
 # COMMAND ----------
 
-(spark.read                   # The DataFrameReader
+df = (spark.read                   # The DataFrameReader
   .option('header', 'true')   # Ignore line #1 - it's a header
   .option('sep', "\t")        # Use tab delimiter (default is comma-separator)
   .schema(csvSchema)          # Use the specified schema
   .csv(csvFile)               # Creates a DataFrame from CSV after reading in the file
-  .printSchema()
 )
+
+# COMMAND ----------
+
+# MAGIC %scala
+# MAGIC 
+# MAGIC import org.apache.spark.sql.functions.col
+# MAGIC import org.apache.spark.sql.types.IntegerType
+# MAGIC 
+# MAGIC case class shemacols(timestamp:String,site:String,requests:Int)
+# MAGIC 
+# MAGIC val csvFile = "/mnt/training/wikipedia/pageviews/pageviews_by_second.tsv"
+# MAGIC 
+# MAGIC val df = (spark.read                   
+# MAGIC   .option("header", "true")   
+# MAGIC   .option("sep", "\t")
+# MAGIC   .csv(csvFile) 
+# MAGIC   .withColumn("requests",col("requests").cast(IntegerType)))
+# MAGIC   .as[shemacols]
+
+# COMMAND ----------
+
+df.printSchema()
 
 # COMMAND ----------
 
